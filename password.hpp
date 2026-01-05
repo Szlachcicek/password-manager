@@ -72,6 +72,8 @@ namespace ks{
         * Function to set new password
         *
         * Allows to change password
+        *
+        * @param password need to be password
         */
         void setPassword(const std::string& password);
         
@@ -79,6 +81,8 @@ namespace ks{
         * Function to set new URL
         *
         * Allows to change URL
+        *
+        * @param url need to be url
         */
         void setURL(const std::string& url);
         
