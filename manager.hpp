@@ -27,11 +27,6 @@ namespace ks{
         Manager(const std::string& path);
 
         /**
-        * Default destructor
-        */
-        ~Manager();
-
-        /**
         * Function to export encrypted data to class Password
         *
         * @param p object from class Password. Calls object.encryption from Password and save string to file
@@ -69,6 +64,6 @@ namespace ks{
         * @return path
         */
         std::string getPath() const;
-    };
+        };
 
 }
