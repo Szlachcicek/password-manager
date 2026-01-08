@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <algorithm>
 
 namespace ks
 {
@@ -10,20 +12,31 @@ namespace ks
 
     Manager::Manager(const std::string& path):m_path(path){}
 
-    void Manager::exporting(const Password& p)
+    void Manager::exporting(const std::vector<Password>& database)
     {
-        std::ofstream file(m_path, std::ios::app);
+        std::vector<Password>toSort = database;
+
+        std::sort(toSort.begin(), toSort.end(), [](const Password& a, const Password& b){return a.m_id<b.m_id;});
+
+        std::ofstream file(m_path, std::ios::trunc);
 
         if(!file.is_open())
         {
             throw std::runtime_error("File did not open");
         }
 
-        file << p.encryption() << "\n";
+        for(const auto& d : toSort)
+        {
+            file << d.encryption() << "\n";
+        }
+
+        file.close();
     }
 
-    bool Manager::importing(Password& p)
+    std::vector<Password> Manager::importing()
     {
+        unsigned int maxId{};
+        std::vector<Password>  passwordsList;
         std::ifstream file(m_path);
 
         if(!file.is_open())
@@ -34,16 +47,24 @@ namespace ks
         std::string line;
         while(std::getline(file, line))
         {
-            p.decryption(line);
+            Password temp;
+            temp.decryption(line);
+            passwordsList.push_back(temp);
+            if(temp.m_id>maxId)
+            {
+                maxId = temp.m_id;
+            }
         }
+            Password::m_idCounter = maxId+1;
 
-        if(!file.eof())
+        if(file.bad())
         {
             throw std::runtime_error("File reading filed");
         }
 
         file.close();
-        return true;
+
+        return passwordsList;
     }
 
     std::ostream& operator<<(std::ostream& os, const Manager& m)
@@ -55,7 +76,7 @@ namespace ks
 
     void Manager::setPath(const std::string& path)
     {
-        if(m_path.length()>0)
+        if(path.length()>0)
         {
             m_path = path;
         }

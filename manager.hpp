@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <algorithm>
 
 namespace ks{
 
@@ -29,18 +31,16 @@ namespace ks{
         /**
         * Function to export encrypted data to class Password
         *
-        * @param p object from class Password. Calls object.encryption from Password and save string to file
+        * @param database vector of objects from class Password. Calls Password::encryption to save string to file
         */
-        void exporting(const Password& p);
+        void exporting(const std::vector<Password>& database);
 
         /**
-        * Function to import encrypted data to class Password
+        * Function to import encrypted data
         *
-        * @param p object from class Password. Read file and calls object.decryption form Password
-        *
-        * @return false if file do not exist or there is no matching ID in file. Otherwise returns true 
+        * @return vector of Password 
         */
-        bool importing(Password& p);
+        std::vector<Password> importing();
 
         /**
         * Operator <<

@@ -10,15 +10,21 @@
 namespace ks{
 
     /**
-    * Basic class to store only password and URL of website. Class automaticly adds time of creation and unique ID
+    * Basic class to store only password and URL of website. Class automaticly adds time of creation and unique ID.
+    * 
+    * Uses <vector> for importing and exporting
+    * 
+    * If file with database exists, firstly import data by using ks::Manager::imporing() to vector
     */
     class Password{
+        friend class Manager;
+
     protected:
         std::string m_password; ///< Password
         std::string m_url; ///< Address to website
         std::time_t m_creationDate; ///< Date of creation
         unsigned int m_id; ///< Unique identifier
-        static unsigned int m_idCounter; ///< Counter for unique identifier
+        static unsigned int m_idCounter; ///< Counter for unique identifier for classes
 
     public:
         /**
@@ -73,7 +79,7 @@ namespace ks{
         *
         * Allows to print class information on screen (std::cout)
         * 
-        * @return password, url, creation date
+        * @return id, password, url, creation date (even when empty)
         */
         friend std::ostream& operator<<(std::ostream& os, const Password& p);
 

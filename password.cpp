@@ -68,6 +68,7 @@ namespace ks
 
         if(std::getline(line, segment, '~'))
         {
+            m_password = segment;
             for(int i = 0; i<segment.length(); i++)
             {
                 int value=segment[i]-5;
@@ -105,7 +106,7 @@ namespace ks
         {
             time.erase(time.end()-1);
         }
-        os << p.m_password << "\n" << p.m_url << "\n" << time << "\n";
+        os << p.m_id << "\n" << p.m_password << "\n" << p.m_url << "\n" << time << "\n";
     
         return os;
     }
