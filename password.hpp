@@ -18,7 +18,7 @@ namespace ks{
         std::string m_url; ///< Address to website
         std::time_t m_creationDate; ///< Date of creation
         unsigned int m_id; ///< Unique identifier
-        unsigned int m_idCounter; ///< Counter for unique identifier
+        static unsigned int m_idCounter; ///< Counter for unique identifier
 
     public:
         /**
@@ -45,7 +45,7 @@ namespace ks{
         * @param password string with password to encrypt
         * @param url string with link to site
         */
-        Password(const std::string& password, const std::string& url);
+        Password(const std::string& url, const std::string& password);
 
         /**
         * Function for encrypting password
@@ -115,7 +115,7 @@ namespace ks{
         *
         * @return creation time (time_t)
         */
-        std::time_t getCreationTime() const;
+        std::string getCreationTime() const;
     };
 
 }

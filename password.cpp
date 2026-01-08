@@ -8,9 +8,13 @@
 
 namespace ks
 {
+    unsigned int Password::m_idCounter = 1;
+
     Password::Password()
     {
         time(&m_creationDate);
+        m_id=m_idCounter;
+        m_idCounter++;
     }
     
     Password::Password(const std::string& url):m_url(url)
@@ -22,28 +26,33 @@ namespace ks
             m_password += random;
         }
         time(&m_creationDate);
+        m_id=m_idCounter;
+        m_idCounter++;
     }
     
-    Password::Password(const std::string& password, const std::string& url):m_password(password), m_url(url)
+    Password::Password(const std::string& url, const std::string& password):m_password(password), m_url(url)
     {
         time(&m_creationDate);
+        m_id=m_idCounter;
+        m_idCounter++;
     }
     
     std::string Password::encryption() const
     {
-        std::string pass;
+        std::string pass=m_password;
         for(int i = 0; i<m_password.length(); i++)
         { 
-        pass[i]=m_password[i]+5;
+        int value = m_password[i]+5;
     
-            if(pass[i]>125)
+            if(value > 125)
             {
-                int j = pass[i]-126;
-                pass[i]=33+j;
+                int value2 = value-126;
+                value=33+value2;
             }
+            pass[i]=char(value);
        }
     
-        return std::to_string(m_id) + "|" + pass + "|" + m_url + "|" + std::to_string(m_creationDate);
+        return std::to_string(m_id) + "~" + pass + "~" + m_url + "~" + std::to_string(m_creationDate) + "~";
     }
     
     void Password::decryption(const std::string& data)
@@ -51,33 +60,33 @@ namespace ks
         std::stringstream line(data);
         std::string segment;
 
-        if(std::getline(line, segment, '|'))
+        if(std::getline(line, segment, '~'))
         {
             m_id = std::stoi(segment);
+            m_idCounter = m_id + 1;
         }
 
-        if(std::getline(line, segment, '|'))
+        if(std::getline(line, segment, '~'))
         {
-            for(int i = 0; i<m_password.length(); i++)
+            for(int i = 0; i<segment.length(); i++)
             {
-                segment[i]=m_password[i]-5;
+                int value=segment[i]-5;
                 
-                if(segment[i]<33)
+                if(value<33)
                 {
-                    int j = segment[i]-32;
-                    segment[i]=125+j;
+                    int value2 = value-32;
+                    value=125+value2;
                 }
+                m_password[i]=char(value);
             }
-            
-            m_password = segment;
         }
         
-        if(std::getline(line, segment, '|'))
+        if(std::getline(line, segment, '~'))
         {
             m_url = segment;
         }
         
-        if(std::getline(line, segment, '|'))
+        if(std::getline(line, segment, '~'))
         {
             long t = std::stol(segment);
             m_creationDate = static_cast<std::time_t>(t);
@@ -86,52 +95,30 @@ namespace ks
     
     bool Password::operator==(const Password& other) const
     {
-        if(m_password==other.m_password && m_url==other.m_url)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return (m_password==other.m_password && m_url==other.m_url);
     }
     
     std::ostream& operator<<(std::ostream& os, const Password& p)
     {
-        os << p.m_password << "\n" << p.m_url << "\n" << p.m_creationDate << "\n";
+        std::string time = ctime(&p.m_creationDate);
+        if(!time.empty() && time[time.length()-1] == '\n')
+        {
+            time.erase(time.end()-1);
+        }
+        os << p.m_password << "\n" << p.m_url << "\n" << time << "\n";
     
         return os;
     }
     
     void Password::setPassword(const std::string& password)
     {
-        if(password.length()>8)
+        if(!password.empty())
         {
-            bool dig{},pct{};
-            for(char i : password)
-            {
-                if(std::isdigit(i))
-                {
-                    dig = true;
-                }
-                if(std::ispunct(i))
-                {
-                    pct = true;
-                }
-                if(pct==true && dig==true)
-                {
-                    m_password=password;
-                    break;
-                }
-                else
-                {
-                    throw std::invalid_argument("Password must contain at leats one special character AND number");
-                }
-            }
+            m_password=password;
         }
         else
         {
-            throw std::invalid_argument("Password must be at least 8 characters long");
+            throw std::invalid_argument("Password can not be empty");
         }
     }
     
@@ -150,8 +137,13 @@ namespace ks
         return m_url;
     }
     
-    std::time_t Password::getCreationTime() const
+    std::string Password::getCreationTime() const
     {
-        return m_creationDate;
+        std::string time = ctime(&m_creationDate);
+        if(!time.empty() && time[time.length()-1] == '\n')
+        {
+            time.erase(time.end()-1);
+        }
+        return time;
     }
 }
