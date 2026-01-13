@@ -5,7 +5,12 @@ project(PasswordManager VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SOURCES src/password.cpp src/manager.cpp src/passwordBA.cpp main.cpp)
+set(SOURCES
+    main.cpp
+    src/password.cpp
+    src/manager.cpp
+    src/passwordBA.cpp
+    src/passwordCM.cpp)
 
 add_executable(PasswordManager ${SOURCES})
 
